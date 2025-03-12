@@ -1,5 +1,8 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import axios from 'axios'
+import { useDispatch } from "react-redux";
+import { setAuthChange } from "../../store/auth-slice";
 
 
 const LoginPage = () => {
@@ -8,7 +11,8 @@ const LoginPage = () => {
         email: "",
         password: "",
     });
-    const [error, setError] = useState('')
+    const [error, setError] = useState('');
+    const dispatch = useDispatch();
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -16,22 +20,17 @@ const LoginPage = () => {
         setFormData({ ...formData, [name]: value })
 
     }
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        let userData = JSON.parse(localStorage.getItem('user'));
-        if(userData){
-            if (formData?.email !== userData?.email) {
-                setError('Email is not correct!!')
-            }
-            if (formData?.password !== userData?.password) {
-                setError('Password is not correct!!')
-            }
-            userData = {...userData,isAuthenticated:true}
-        }else{
-            setError('Firstly sign up account')
-        }
-        console.log(userData);
 
+        const {data} = await axios.post('http://localhost:3001/auth/login',
+            formData
+        )
+
+        if (data?.success) {
+            localStorage.setItem('token',data?.token)
+            dispatch(setAuthChange({isAuthenticated:true, user:data.user}))
+        }
     }
 
     return <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8 bg-gray-100">

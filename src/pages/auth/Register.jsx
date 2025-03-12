@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
-import { handleSignUp } from "../../store/auth-slice";
-
+import axios from 'axios';
 
 
 
@@ -14,17 +13,26 @@ const RegisterPage = () => {
         c_password: ""
     });
     const navigate = useNavigate();
-    const dispatch = useDispatch()
-;
+
+
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setFormData({ ...formData, [name]: value })
-
     }
-    const handleSubmit = (e) => {
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        dispatch(handleSignUp(formData));
-        navigate('/auth/login');
+        // dispatch(handleSignUp(formData));
+
+        const {data} = await axios.post('http://localhost:3001/auth/register',
+            formData
+        )
+        if (data?.success) {
+            navigate('/login')
+        }else{
+            console.log(data.msg)
+        }
+
     }
 
 
