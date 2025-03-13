@@ -13,11 +13,12 @@ import { useDispatch, useSelector } from 'react-redux'
 import { setAuthChange } from './store/auth-slice'
 import axios from 'axios'
 import CreateProduct from './components/CreateProduct'
+import CartPage from './pages/shop/CartPage'
 
 
 
 function App() {
- const {isAuthenticated} = useSelector(state=>state.auth);
+ const {isAuthenticated,user} = useSelector(state=>state.auth);
  const navigate = useNavigate();
  const dispatch = useDispatch();
 
@@ -25,21 +26,20 @@ function App() {
   const token = localStorage.getItem('token');
   
   if(token){
-    // axios.get('http://localhost:3001/auth/check-auth',{
-    //   headers:{
-    //     Authorization: token
-    //   }
-    // }).then((res)=>{
-    //   console.log(res);
-    //   dispatch(setAuthChange({isAuthenticated:true, user:res.data.user}))
-    // }).catch((err)=>{
-    //   if(err.response && err.response.status===401){
-    //     localStorage.removeItem('token');
-    //     dispatch(setAuthChange({isAuthenticated:false, user:null}));
-    //     navigate('/auth/login');
-    //   }
-    // })
-    dispatch(setAuthChange({isAuthenticated:true, user:null}))
+    axios.get('http://localhost:3001/auth/check-auth',{
+      headers:{
+        Authorization: token
+      }
+    }).then((res)=>{
+      dispatch(setAuthChange({isAuthenticated:true, user:res.data.user}))
+    }).catch((err)=>{
+      if(err.response && err.response.status===401){
+        localStorage.removeItem('token');
+        dispatch(setAuthChange({isAuthenticated:false, user:null}));
+        navigate('/auth/login');
+      }
+    })
+    // dispatch(setAuthChange({isAuthenticated:true, user:user}))
     
   }else{
     dispatch(setAuthChange({isAuthenticated:false, user:null}))
@@ -60,6 +60,7 @@ function App() {
           <Route path='form' element={<Form />} />
           <Route path='products' element={<Products />} />
           <Route path='create-product' element={<CreateProduct />} />
+          <Route path='cart' element={<CartPage />} />
         </Route>
       </Route>
       <Route path="*" element={<UnAuth_page />} />

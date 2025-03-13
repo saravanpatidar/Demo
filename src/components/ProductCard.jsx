@@ -1,3 +1,4 @@
+import ProductDetails from "./ProductDetails.";
 import SearchProduct from "./SearchProduct";
 
 
