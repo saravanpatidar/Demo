@@ -12,7 +12,6 @@ function Dashboard() {
 
     const fetchProductData = async () => {
         const { data } = await axios.get('http://localhost:3001/shop/products');
-        console.log(data?.products);
         setProducts(data?.products);
     }
 

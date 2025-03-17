@@ -6,29 +6,6 @@ import { setIsOpen } from '../../store/cart-slice/cart-slice'
 import { useEffect, useState } from 'react'
 import axios from 'axios'
 
-const products = [
-    {
-        id: 1,
-        name: 'Throwback Hip Bag',
-        href: '#',
-        color: 'Salmon',
-        price: '$90.00',
-        quantity: 1,
-        imageSrc: 'https://tailwindcss.com/plus-assets/img/ecommerce-images/shopping-cart-page-04-product-01.jpg',
-        imageAlt: 'Salmon orange fabric pouch with match zipper, gray zipper pull, and adjustable hip belt.',
-    },
-    {
-        id: 2,
-        name: 'Medium Stuff Satchel',
-        href: '#',
-        color: 'Blue',
-        price: '$32.00',
-        quantity: 1,
-        imageSrc: 'https://tailwindcss.com/plus-assets/img/ecommerce-images/shopping-cart-page-04-product-02.jpg',
-        imageAlt:
-            'Front of satchel with blue canvas body, black straps and handle, drawstring top, and front zipper pouch.',
-    },
-]
 
 const CartPage = () => {
     const { isOpen } = useSelector(state => state.cart);
@@ -59,6 +36,15 @@ const CartPage = () => {
         if (data.success) {
             setCartItems(data.cartItems);
         }
+    }
+
+    const handleQunatityUpdate = async (getCartItem, typeOfAction) => {
+        const { data } = await axios.put(`http://localhost:3001/shop/cart/${user.id}/${getCartItem?.productId?._id}`, { action: typeOfAction });
+        if (data.success) {
+            console.log("update quantity", data.cartItems)
+            setCartItems(data.cartItems);
+        }
+
     }
 
     return (
@@ -96,6 +82,8 @@ const CartPage = () => {
                                         <div className="flow-root">
                                             <ul role="list" className="-my-6 divide-y divide-gray-200">
                                                 {cartItems.map((cartItem) => (
+                                                    console.log(cartItem),
+
                                                     <li key={cartItem._id} className="flex py-6">
                                                         <div className="size-24 shrink-0 overflow-hidden rounded-md border border-gray-200">
                                                             <img alt={cartItem.productId.name} src={cartItem.productId.image} className="size-full object-cover" />
@@ -111,7 +99,12 @@ const CartPage = () => {
                                                                 </div>
                                                             </div>
                                                             <div className="flex flex-1 items-end justify-between text-sm">
-                                                                <p className="text-gray-500">Qty {cartItem.quantity}</p>
+                                                                <div className='space-x-3'>
+                                                                    <button disabled={cartItem.quantity <= 1 ? true : false} onClick={() => handleQunatityUpdate(cartItem, 'minus')}
+                                                                        className={'font-bold text-xl cursor-pointer text-red-400 disabled:text-red-200'}>-</button>
+                                                                    <span className="text-gray-500">{cartItem.quantity}</span>
+                                                                    <button onClick={() => handleQunatityUpdate(cartItem, 'add')} className=' font-bold text-xl cursor-pointer text-green-400 disabled:text-green-200'>+</button>
+                                                                </div>
 
                                                                 <div className="flex">
                                                                     <button onClick={() => handleDeleteCart(cartItem.productId._id)} type="button" className="font-medium text-indigo-600 hover:text-indigo-500">
