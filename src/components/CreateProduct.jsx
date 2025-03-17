@@ -17,7 +17,7 @@ const CreateProduct = () => {
 
     const onFileChange = (e) => {
         const file = e.target.files[0];
-        setProductData((prevData) => ({ ...prevData, image: file }))
+        setProductData((prevData) => ({ ...prevData, image: file ? file:''}))
 
     }
     const handleOnChange = (e) => {
@@ -41,6 +41,16 @@ const CreateProduct = () => {
             const { data } = await axios.post('http://localhost:3001/shop/create-product', formData);
             if (data?.success) {
                 console.log(data.msg);
+                setProductData({
+                    image: null,
+                    name: "",
+                    price: "",
+                    brand: "",
+                    category: '',
+                    stocks: '',
+                    quantity: '',
+                    rating: ''
+                })
             }
         } catch (err) {
             // console.log(err);
